@@ -20,12 +20,25 @@ int main(int argc, char** argv) {
         }
     }
 
-    bool found = false;
     dai::DeviceInfo info;
-    std::tie(found, info) = dai::DeviceBootloader::getFirstAvailableDevice();
-    if(!found) {
+    auto deviceInfos = dai::DeviceBootloader::getAllAvailableDevices();
+    if(deviceInfos.empty()) {
         std::cout << "No device found to flash. Exiting." << std::endl;
         return -1;
+    } else {
+        for(int i = 0; i < deviceInfos.size()){
+            const auto& devInfo = deviceInfos[i];
+            std::cout << "[" << i << "] " << devInfo.getMxId() << "[" << devInfo.desc.protocol << "]";
+            if(devInfo.state == X_LINK_BOOTLOADER){
+                dai::DeviceBootloader bl(devInfo);
+                std::cout << " current bootloader: " << bl.getVersion();
+            }
+            std::cout << std::endl;
+        }
+        int selected = 0;
+        std::cout << "Which DepthAI device to flash bootloader for [0.." << deviceInfos.size()-1 << "]\n"; 
+        std::cin >> selected;
+        info = deviceInfos[selected];
     }
 
     bool hasBootloader = (info.state == X_LINK_BOOTLOADER);
