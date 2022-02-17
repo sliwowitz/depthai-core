@@ -244,11 +244,16 @@ jobs:
 
 
   # Testing
-  test-vanilla:
+  test:
     strategy:
       matrix:
         os: ['windows', 'macos', 'linux']
         arch: ['x64']
+        flavor: ['vanilla', 'asan-ubsan', 'tsan']
+        exclude:
+          - os: 'windows'
+            arch: 'x64'
+            flavor: 'tsan'
       fail-fast: false
     runs-on: ['self-hosted', '${{ matrix.os }}', '${{ matrix.arch }}']
 
@@ -257,72 +262,29 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Configure and Build
-      run: |
-        cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
-        cmake --build build --parallel 8
+    - name: Specify toolchain path
+      if: ${{ matrix.flavor }} == 'vanilla'
+      run: echo "CMAKE_TOOLCHAIN_PATH=" >> $GITHUB_ENV
+    - name: Specify toolchain path
+      if: ${{ matrix.flavor }} != 'vanilla'
+      run: echo "CMAKE_TOOLCHAIN_PATH=$PWD/cmake/toolchain/${{ matrix.flavor }}.cmake" >> $GITHUB_ENV
 
-    - name: Test
+    - name: Configure, Build and Test
+      if: ${{ matrix.os }} != 'linux'
       run: |
+        cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D HUNTER_ROOT=$HOME/.hun_${{ matrix.flavor }} -D CMAKE_TOOLCHAIN_PATH=$PWD/cmake/toolchain/asan-ubsan.cmake -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
+        cmake --build build --parallel 8
         cd build
         ctest -C Release --output-on-failure
 
-  # Address and Undefined behavior sanitizer
-  test-asan-ubsan:
-    strategy:
-      matrix:
-        os: ['windows', 'macos', 'linux']
-        arch: ['x64']
-      fail-fast: false
-    runs-on: ['self-hosted', '${{ matrix.os }}', '${{ matrix.arch }}']
-
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
-
-    - name: Configure and Build
-      if: matrix.os != 'windows'
+    - name: Configure, Build and Test
+      if: ${{ matrix.os }} == 'linux'
       run: |
-        cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D HUNTER_ROOT=$HOME/.hun_asan -D CMAKE_TOOLCHAIN_PATH=$PWD/cmake/toolchain/asan-ubsan.cmake -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
+        cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D HUNTER_ROOT=$HOME/.hun_${{ matrix.flavor }} -D CMAKE_TOOLCHAIN_PATH=$PWD/cmake/toolchain/asan-ubsan.cmake -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
         cmake --build build --parallel 8
-
-    - name: Configure and Build
-      if: matrix.os == 'windows'
-      run: |
-        cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D HUNTER_ROOT=$HOME/.hun_asan -D CMAKE_TOOLCHAIN_PATH=$PWD/cmake/toolchain/thread.cmake -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
-        cmake --build build --parallel 8
-
-    - name: Test
-      run: |
         cd build
         ctest -C Release --output-on-failure
-
-  # Thread sanitizer - data race detector
-  # Only run on macOS and Linux
-  test-tsan:
-    strategy:
-      matrix:
-        os: ['macos', 'linux']
-        arch: ['x64']
-      fail-fast: false
-    runs-on: ['self-hosted', '${{ matrix.os }}', '${{ matrix.arch }}']
-
-    # Clone repository
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
-
-    - name: Configure and Build
-      run: |
-        cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D HUNTER_ROOT=$HOME/.hun_tsan -D CMAKE_TOOLCHAIN_PATH=$PWD/cmake/toolchain/tsan.cmake -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
-        cmake --build build --parallel 8
-
-    - name: Test
-      run: |
-        cd build
-        ctest -C Release --output-on-failure
+      shell: bash -leo pipefail {0}
 
 
   release:
