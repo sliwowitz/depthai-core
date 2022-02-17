@@ -220,7 +220,9 @@ dai_add_example(rgb_mobilenet MobileNet/rgb_mobilenet.cpp  ON)
 dai_add_example(rgb_mobilenet_4k MobileNet/rgb_mobilenet_4k.cpp ON)
 dai_add_example(mono_mobilenet MobileNet/mono_mobilenet.cpp  ON)
 dai_add_example(video_mobilenet MobileNet/video_mobilenet.cpp ON)
-dai_add_example(webcam_mobilenet MobileNet/webcam_mobilenet_example.cpp ON)
+# Usually not available - removed from tests
+# TODO - add to a separate group if possible
+dai_add_example(webcam_mobilenet MobileNet/webcam_mobilenet_example.cpp OFF)
 
 target_compile_definitions(camera_mobilenet_sync PRIVATE BLOB_PATH="${mobilenet_blob}")
 target_compile_definitions(rgb_mobilenet PRIVATE BLOB_PATH="${mobilenet_blob}"  ON)
