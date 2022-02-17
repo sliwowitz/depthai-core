@@ -238,9 +238,9 @@ jobs:
   test-vanilla:
     strategy:
       matrix:
-        os: [windows, macos, linux]
-        arch: [x64]
-    runs-on: [self-hosted, ${{ matrix.os }}, ${{ matrix.arch }}]
+        os: ['windows', 'macos', 'linux']
+        arch: ['x64']
+    runs-on: ['self-hosted', '${{ matrix.os }}', '${{ matrix.arch }}']
 
     steps:
     - uses: actions/checkout@v2
@@ -261,9 +261,9 @@ jobs:
   test-asan-ubsan:
     strategy:
       matrix:
-        os: [windows, macos, linux]
-        arch: [x64]
-    runs-on: [self-hosted, ${{ matrix.os }}, ${{ matrix.arch }}]
+        os: ['windows', 'macos', 'linux']
+        arch: ['x64']
+    runs-on: ['self-hosted', '${{ matrix.os }}', '${{ matrix.arch }}']
 
     steps:
     - uses: actions/checkout@v2
@@ -292,9 +292,9 @@ jobs:
   test-tsan:
     strategy:
       matrix:
-        os: [macos, linux]
-        arch: [x64]
-    runs-on: [self-hosted, ${{ matrix.os }}, ${{ matrix.arch }}]
+        os: ['macos', 'linux']
+        arch: ['x64']
+    runs-on: ['self-hosted', '${{ matrix.os }}', '${{ matrix.arch }}']
 
     # Clone repository
     steps:
