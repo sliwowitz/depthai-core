@@ -59,7 +59,6 @@ int main(int argc, char** argv) {
 
     // Worker thread
     std::thread workerThread([&running, &queueMtx, &queue, &pipeline]() {
-
         // Connect to device and start pipeline
         dai::Device device(pipeline);
 
@@ -148,9 +147,7 @@ int main(int argc, char** argv) {
 
             // Move current NN results to prev
             prevResult = result;
-
         }
-
     });
 
     // Display (main) thread
