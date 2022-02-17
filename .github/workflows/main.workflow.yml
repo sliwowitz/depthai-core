@@ -280,11 +280,11 @@ jobs:
     - name: Configure, Build and Test
       if: matrix.os == 'linux'
       run: |
+        source ~/.bashrc
         cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D HUNTER_ROOT=$HOME/.hun_${{ matrix.flavor }} -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
         cmake --build build --parallel 8 --config Release
         cd build
         ctest -C Release --output-on-failure
-      shell: bash -leo pipefail {0}
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
