@@ -118,11 +118,12 @@ jobs:
         cmake -H. -Bbuild -D'DEPTHAI_BUILD_EXAMPLES=ON' -D'DEPTHAI_BUILD_TESTS=ON' ${{ env.CMAKE_ARGS }}
         cmake --build build -- -j4
 
-    - name: Build (old CMake, MSVC)
-      if: matrix.cmake == '3.10.x' && matrix.os == 'windows-latest'
-      run: |
-        cmake -H. -Bbuild -D'DEPTHAI_BUILD_EXAMPLES=ON' -D'DEPTHAI_BUILD_TESTS=ON'
-        cmake --build build
+    # CMake binaries unavailable
+    # - name: Build (old CMake, MSVC)
+    #   if: matrix.cmake == '3.10.x' && matrix.os == 'windows-latest'
+    #   run: |
+    #     cmake -H. -Bbuild -D'DEPTHAI_BUILD_EXAMPLES=ON' -D'DEPTHAI_BUILD_TESTS=ON'
+    #     cmake --build build
 
     - name: Build (newest CMake)
       if: matrix.cmake != '3.10.x'
