@@ -1,7 +1,7 @@
 #include <atomic>
 #include <iostream>
-#include <vector>
 #include <tuple>
+#include <vector>
 
 // Inludes common necessary includes for development using depthai library
 #include "depthai/depthai.hpp"
@@ -11,6 +11,7 @@ using namespace std::chrono;
 using namespace std::chrono_literals;
 
 constexpr auto NUM_MESSAGES = 50;
+constexpr auto TEST_TIMEOUT = 20s;
 
 int main() {
     mutex mtx;
@@ -69,8 +70,14 @@ int main() {
         deviceCounter++;
     }
 
+    // Join device threads
+    for(auto& thread : threads) {
+        thread.join();
+    }
+
     bool finished = false;
-    while(!finished) {
+    t1 = steady_clock::now();
+    do {
         {
             std::unique_lock<std::mutex> l(mtx);
 
@@ -90,12 +97,7 @@ int main() {
         }
 
         std::this_thread::sleep_for(1ms);
-    }
+    } while(!finished && steady_clock::now() - t1 < TEST_TIMEOUT);
 
-    // Join device threads
-    for(auto& thread : threads) {
-        thread.join();
-    }
-
-    return 0;
+    return finished == 0;
 }
