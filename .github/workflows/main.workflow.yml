@@ -313,7 +313,7 @@ jobs:
 
     - name: Configure and Build
       run: |
-        cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D -D HUNTER_ROOT=$HOME/.hun_tsan -D CMAKE_TOOLCHAIN_PATH=$PWD/cmake/toolchain/tsan.cmake -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
+        cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D HUNTER_ROOT=$HOME/.hun_tsan -D CMAKE_TOOLCHAIN_PATH=$PWD/cmake/toolchain/tsan.cmake -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
         cmake --build build --parallel 8
 
     - name: Test
