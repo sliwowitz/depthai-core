@@ -236,9 +236,10 @@ jobs:
 
   # Testing
   test-vanilla:
-    matrix:
-      os: [windows, macos, linux]
-      arch: [x64]
+    strategy:
+      matrix:
+        os: [windows, macos, linux]
+        arch: [x64]
     runs-on: [self-hosted, ${{ matrix.os }}, ${{ matrix.arch }}]
 
     steps:
@@ -258,9 +259,10 @@ jobs:
 
   # Address and Undefined behavior sanitizer
   test-asan-ubsan:
-    matrix:
-      os: [windows, macos, linux]
-      arch: [x64]
+    strategy:
+      matrix:
+        os: [windows, macos, linux]
+        arch: [x64]
     runs-on: [self-hosted, ${{ matrix.os }}, ${{ matrix.arch }}]
 
     steps:
@@ -288,9 +290,10 @@ jobs:
   # Thread sanitizer - data race detector
   # Only run on macOS and Linux
   test-tsan:
-    matrix:
-      os: [macos, linux]
-      arch: [x64]
+    strategy:
+      matrix:
+        os: [macos, linux]
+        arch: [x64]
     runs-on: [self-hosted, ${{ matrix.os }}, ${{ matrix.arch }}]
 
     # Clone repository
