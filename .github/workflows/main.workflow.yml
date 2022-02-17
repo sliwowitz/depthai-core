@@ -246,6 +246,7 @@ jobs:
       matrix:
         os: ['windows', 'macos', 'linux']
         arch: ['x64']
+      fail-fast: false
     runs-on: ['self-hosted', '${{ matrix.os }}', '${{ matrix.arch }}']
 
     steps:
@@ -269,6 +270,7 @@ jobs:
       matrix:
         os: ['windows', 'macos', 'linux']
         arch: ['x64']
+      fail-fast: false
     runs-on: ['self-hosted', '${{ matrix.os }}', '${{ matrix.arch }}']
 
     steps:
@@ -300,6 +302,7 @@ jobs:
       matrix:
         os: ['macos', 'linux']
         arch: ['x64']
+      fail-fast: false
     runs-on: ['self-hosted', '${{ matrix.os }}', '${{ matrix.arch }}']
 
     # Clone repository
