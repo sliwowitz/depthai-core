@@ -14,6 +14,11 @@ configure_file(
     @ONLY
 )
 set(CMAKE_TOOLCHAIN_FILE "${gen_toolchain}" CACHE STRING "" FORCE)
+if(DEFINED _INTERNAL_DEPTHAI_ORIGINAL_CMAKE_TOOLCHAIN_FILE)
+    message(STATUS "Using specified toolchain file: ${_INTERNAL_DEPTHAI_ORIGINAL_CMAKE_TOOLCHAIN_FILE} combined into: ${CMAKE_TOOLCHAIN_FILE}")
+else()
+    message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
+endif()
 
 include("cmake/HunterGate.cmake")
 HunterGate(

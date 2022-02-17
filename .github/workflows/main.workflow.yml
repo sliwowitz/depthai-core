@@ -263,14 +263,14 @@ jobs:
         submodules: 'recursive'
 
     - name: Specify toolchain path
-      if: ${{ matrix.flavor }} == 'vanilla'
+      if: matrix.flavor == 'vanilla'
       run: echo "CMAKE_TOOLCHAIN_PATH=" >> $GITHUB_ENV
     - name: Specify toolchain path
-      if: ${{ matrix.flavor }} != 'vanilla'
+      if: matrix.flavor != 'vanilla'
       run: echo "CMAKE_TOOLCHAIN_PATH=$PWD/cmake/toolchain/${{ matrix.flavor }}.cmake" >> $GITHUB_ENV
 
     - name: Configure, Build and Test
-      if: ${{ matrix.os }} != 'linux'
+      if: matrix.os != 'linux'
       run: |
         cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D HUNTER_ROOT=$HOME/.hun_${{ matrix.flavor }} -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
         cmake --build build --parallel 8 --config Release
@@ -278,13 +278,13 @@ jobs:
         ctest -C Release --output-on-failure
 
     - name: Configure, Build and Test
-      if: ${{ matrix.os }} == 'linux'
+      if: matrix.os == 'linux'
       run: |
-        source ~/.bashrc
         cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D HUNTER_ROOT=$HOME/.hun_${{ matrix.flavor }} -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
         cmake --build build --parallel 8 --config Release
         cd build
         ctest -C Release --output-on-failure
+      shell: bash -leo pipefail {0}
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
