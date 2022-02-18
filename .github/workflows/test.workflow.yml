@@ -35,44 +35,42 @@ jobs:
     runs-on: ['self-hosted', '${{ matrix.os }}', '${{ matrix.arch }}']
 
     steps:
-     - name: Cache .hunter folder
+    - name: Cache .hunter folder
       uses: actions/cache@v2
       with:
         path: $HOME/.hun_${{ matrix.flavor }}
-        key: hunter-${{ matrix.os }}-${{ matrix.cmake }}
-    - name: Cache .hunter folder
-      if: matrix.os == 'windows-latest'
-      uses: actions/cache@v2
-      with:
-        path: C:/.hunter/
         key: hunter-${{ matrix.os }}-${{ matrix.cmake }}
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
 
-    - name: Specify toolchain path
-      if: matrix.flavor == 'vanilla'
-      run: echo "CMAKE_TOOLCHAIN_PATH=" >> $GITHUB_ENV
-    - name: Specify toolchain path
-      if: matrix.flavor != 'vanilla'
-      run: echo "CMAKE_TOOLCHAIN_PATH=$PWD/cmake/toolchain/${{ matrix.flavor }}.cmake" >> $GITHUB_ENV
-
-    - name: Configure, Build and Test
-      if: matrix.os != 'linux'
+    - name: Test env var
       run: |
         echo "Test .env $FLYING_ENV_VAR"
-        cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D HUNTER_ROOT=$HOME/.hun_${{ matrix.flavor }} -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
-        cmake --build build --parallel 8 --config Release
-        cd build
-        ctest -C Release --output-on-failure -L usb
 
-    - name: Configure, Build and Test
-      if: matrix.os == 'linux'
-      run: |
-        echo "Test .env $FLYING_ENV_VAR"
-        export DISPLAY=:99
-        xdpyinfo -display $DISPLAY >/dev/null 2>&1 || (Xvfb $DISPLAY &)
-        cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D HUNTER_ROOT=$HOME/.hun_${{ matrix.flavor }} -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
-        cmake --build build --parallel 8 --config Release
-        cd build
-        ctest -C Release --output-on-failure -L usb
+    # - name: Specify toolchain path
+    #   if: matrix.flavor == 'vanilla'
+    #   run: echo "CMAKE_TOOLCHAIN_PATH=" >> $GITHUB_ENV
+    # - name: Specify toolchain path
+    #   if: matrix.flavor != 'vanilla'
+    #   run: echo "CMAKE_TOOLCHAIN_PATH=$PWD/cmake/toolchain/${{ matrix.flavor }}.cmake" >> $GITHUB_ENV
+
+    # - name: Configure, Build and Test
+    #   if: matrix.os != 'linux'
+    #   run: |
+    #     echo "Test .env $FLYING_ENV_VAR"
+    #     cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D HUNTER_ROOT=$HOME/.hun_${{ matrix.flavor }} -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
+    #     cmake --build build --parallel 8 --config Release
+    #     cd build
+    #     ctest -C Release --output-on-failure -L usb
+
+    # - name: Configure, Build and Test
+    #   if: matrix.os == 'linux'
+    #   run: |
+    #     echo "Test .env $FLYING_ENV_VAR"
+    #     export DISPLAY=:99
+    #     xdpyinfo -display $DISPLAY >/dev/null 2>&1 || (Xvfb $DISPLAY &)
+    #     cmake -S . -B build -D CMAKE_BUILD_TYPE=Release -D HUNTER_ROOT=$HOME/.hun_${{ matrix.flavor }} -D DEPTHAI_BUILD_EXAMPLES=ON -D DEPTHAI_BUILD_TESTS=ON -D DEPTHAI_TEST_EXAMPLES=ON
+    #     cmake --build build --parallel 8 --config Release
+    #     cd build
+    #     ctest -C Release --output-on-failure -L usb
