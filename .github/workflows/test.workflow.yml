@@ -45,9 +45,21 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Test env var
+    - name: Test setup / finish scripts
       run: |
-        echo "Test .env $FLYING_ENV_VAR"
+        if [ "$COMMAND_DEVICES_SETUP" ]; then
+          $COMMAND_DEVICES_SETUP
+        else
+          echo "Setup script not set"
+        fi
+
+        echo "Test..."
+
+        if [ "$COMMAND_DEVICES_FINISH" ]; then
+          "$COMMAND_DEVICES_FINISH"
+        else
+          echo "Stop script not set"
+        fi
 
     # - name: Specify toolchain path
     #   if: matrix.flavor == 'vanilla'
