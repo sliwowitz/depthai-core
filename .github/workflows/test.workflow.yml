@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - develop
+      - testing_ci
     tags:
       - 'v*'
   pull_request:
