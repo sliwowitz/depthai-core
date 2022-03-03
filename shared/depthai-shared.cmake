@@ -32,8 +32,9 @@ if(GIT_FOUND AND NOT DEPTHAI_DOWNLOADED_SOURCES)
         execute_process(
             COMMAND ${GIT_EXECUTABLE} submodule status ${DEPTHAI_SHARED_FOLDER}
             WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+            COMMAND_ECHO STDERR
             OUTPUT_VARIABLE statusCommit
-            ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
+            OUTPUT_STRIP_TRAILING_WHITESPACE
         )
         string(SUBSTRING ${statusCommit} 0 1 status)
         if(${status} STREQUAL "-")
