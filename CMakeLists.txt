@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.4) # For Hunter
-
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # MSVC variable isn't available before 'project' call
 # Generalize to Win32 platform for now
 if(NOT WIN32)
     set(HUNTER_CONFIGURATION_TYPES "Release" CACHE STRING "Hunter dependencies list of build configurations")
 endif()
 
+set(BUILD_SHARED_LIBS ON)
 # Read the BUILD_SHARED_LIBS option and select PIC toolchain
 if(BUILD_SHARED_LIBS)
     if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
