@@ -16,8 +16,7 @@ int main() try {
 
     auto device = pipeline.getDefaultDevice();
 
-    bool running = true;
-    while(running) {
+    while(true) {
         auto videoIn = video->get<dai::ImgFrame>();
 
         // Get BGR frame from NV12 encoded video frame to show with opencv
@@ -26,11 +25,10 @@ int main() try {
 
         int key = cv::waitKey(1);
         if(key == 'q' || key == 'Q') {
-            running = false;
+            return 0;
         }
         if(key == 'c') {
             device->crashDevice();
-            running = false;
         }
     }
     return 0;
