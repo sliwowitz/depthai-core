@@ -39,29 +39,29 @@ def showDepth(depthFrame, windowName="Depth", minDistance=500, maxDistance=5000,
     cv.imshow(windowName, depthColor)
 
 
-def rotation_matrix_to_euler_angles(rotation_matrix, vector=False):
+def rotationMatrixToEulerAngles(rotationMatrix, vector=False):
     if vector:
         try:
             import cv2 as _cv2
         except ImportError as exc:
             raise RuntimeError("vector=True requires opencv-python (cv2)") from exc
-        rotation_matrix, _ = _cv2.Rodrigues(rotation_matrix)
+        rotationMatrix, _ = _cv2.Rodrigues(rotationMatrix)
 
-    sy = np.sqrt(rotation_matrix[0, 0] ** 2 + rotation_matrix[1, 0] ** 2)
+    sy = np.sqrt(rotationMatrix[0, 0] ** 2 + rotationMatrix[1, 0] ** 2)
     singular = sy < 1e-6
     if not singular:
-        x_angle = np.arctan2(rotation_matrix[2, 1], rotation_matrix[2, 2])
-        y_angle = np.arctan2(-rotation_matrix[2, 0], sy)
-        z_angle = np.arctan2(rotation_matrix[1, 0], rotation_matrix[0, 0])
+        xAngle = np.arctan2(rotationMatrix[2, 1], rotationMatrix[2, 2])
+        yAngle = np.arctan2(-rotationMatrix[2, 0], sy)
+        zAngle = np.arctan2(rotationMatrix[1, 0], rotationMatrix[0, 0])
     else:
-        x_angle = np.arctan2(-rotation_matrix[1, 2], rotation_matrix[1, 1])
-        y_angle = np.arctan2(-rotation_matrix[2, 0], sy)
-        z_angle = 0.0
+        xAngle = np.arctan2(-rotationMatrix[1, 2], rotationMatrix[1, 1])
+        yAngle = np.arctan2(-rotationMatrix[2, 0], sy)
+        zAngle = 0.0
 
-    return np.rad2deg(x_angle), np.rad2deg(y_angle), np.rad2deg(z_angle)
+    return np.rad2deg(xAngle), np.rad2deg(yAngle), np.rad2deg(zAngle)
 
 
-def euler_angles_to_rotation_matrix(phi, theta, psi):
+def eulerAnglesToRotationMatrix(phi, theta, psi):
     phi = np.radians(phi)
     theta = np.radians(theta)
     psi = np.radians(psi)
@@ -91,32 +91,32 @@ def euler_angles_to_rotation_matrix(phi, theta, psi):
 
 
 def botchCalibration(device : dai.Device):
-    calibration_handler = device.readCalibration()
-    extrinsics = calibration_handler.getCameraExtrinsics(
+    calibrationHandler = device.readCalibration()
+    extrinsics = calibrationHandler.getCameraExtrinsics(
         dai.CameraBoardSocket.CAM_B, dai.CameraBoardSocket.CAM_C
     )
 
-    extrinsics_np = np.array(extrinsics, dtype=float)
-    r_current = extrinsics_np[0:3, 0:3]
-    t_current = extrinsics_np[0:3, 3]
+    extrinsicsNp = np.array(extrinsics, dtype=float)
+    rCurrent = extrinsicsNp[0:3, 0:3]
+    tCurrent = extrinsicsNp[0:3, 3]
 
-    phi, theta, psi = rotation_matrix_to_euler_angles(r_current)
-    phi_botched = phi + 0.15
-    theta_botched = theta + 0.10
-    psi_botched = psi
-    r_botched = euler_angles_to_rotation_matrix(phi_botched, theta_botched, psi_botched)
+    phi, theta, psi = rotationMatrixToEulerAngles(rCurrent)
+    phiBotched = phi + 0.15
+    thetaBotched = theta + 0.10
+    psiBotched = psi
+    rBotched = eulerAnglesToRotationMatrix(phiBotched, thetaBotched, psiBotched)
 
-    t = [float(t_current[0]), float(t_current[1]), float(t_current[2])]
-    r = r_botched.tolist()
+    t = [float(tCurrent[0]), float(tCurrent[1]), float(tCurrent[2])]
+    r = rBotched.tolist()
 
     print(f"Original Euler deg (x, y, z): ({phi:.6f}, {theta:.6f}, {psi:.6f})")
-    print(f"Botched  Euler deg (x, y, z): ({phi_botched:.6f}, {theta_botched:.6f}, {psi_botched:.6f})")
+    print(f"Botched  Euler deg (x, y, z): ({phiBotched:.6f}, {thetaBotched:.6f}, {psiBotched:.6f})")
     print(f"Keeping translation vector (cm): {t}")
 
-    calibration_handler.setCameraExtrinsics(
+    calibrationHandler.setCameraExtrinsics(
         dai.CameraBoardSocket.CAM_B, dai.CameraBoardSocket.CAM_C, r, t, t
     )
-    device.setCalibration(calibration_handler)
+    device.setCalibration(calibrationHandler)
 
 
 # Create pipeline
