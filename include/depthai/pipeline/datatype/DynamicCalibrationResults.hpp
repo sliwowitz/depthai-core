@@ -140,6 +140,9 @@ struct CalibrationQuality : public Buffer {
  * @ingroup dcl_results
  */
 struct CalibrationMetrics : public Buffer {
+    CalibrationMetrics() = default;
+    virtual ~CalibrationMetrics();
+
     /** * @brief Confidence score of the computed calibration.
      * * A normalized value between 0.0 and 1.0 indicating how much you can
      * trust the resulting calibration.
