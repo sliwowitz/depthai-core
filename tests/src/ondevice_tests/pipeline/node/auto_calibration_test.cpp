@@ -45,7 +45,7 @@ TEST_CASE("AutoCalibration: Do not crash") {
     std::vector<dai::AutoCalibrationConfig> configs = {dai::AutoCalibrationConfig{dai::AutoCalibrationConfig::ON_START, 10, 0.9f, 0.7f, 20, 20, 2, true},
                                                        dai::AutoCalibrationConfig{dai::AutoCalibrationConfig::CONTINUOUS, 10, 0.9f, 0.7f, 20, 20, 2, false},
                                                        dai::AutoCalibrationConfig{dai::AutoCalibrationConfig::CONTINUOUS, 0, 0.9f, 0.7f, 20, 20, 2, true}};
-    for(auto config : configs) {
+    for(const auto& config : configs) {
         auto device = std::make_shared<dai::Device>();
         REQUIRE(device != nullptr);
 
