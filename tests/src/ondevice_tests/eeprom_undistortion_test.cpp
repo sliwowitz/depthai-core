@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <catch2/catch_all.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <chrono>
 #include <depthai/depthai.hpp>
 
 #include "depthai/pipeline/datatype/ImgFrame.hpp"
@@ -18,24 +17,8 @@
 TEST_CASE("Undistorted output changes only on new EEPROM") {
     dai::Pipeline pipeline;
 
-    auto device = pipeline.getDefaultDevice();
-    auto savedCalibration = device->getCalibration();
-    struct CalibrationRestoreGuard {
-        std::shared_ptr<dai::Device> device;
-        dai::CalibrationHandler savedCalibration;
-
-        ~CalibrationRestoreGuard() noexcept {
-            try {
-                if(device) {
-                    device->setCalibration(savedCalibration);
-                }
-            } catch(...) {
-            }
-        }
-    };
-    [[maybe_unused]] CalibrationRestoreGuard calibrationRestoreGuard{device, savedCalibration};
-
     // Read the device's current calibration and force old EEPROM format
+    auto device = pipeline.getDefaultDevice();
     auto calib = device->readCalibration();
     auto eeprom = calib.getEepromData();
     bool newEEPROM = false;
@@ -75,9 +58,7 @@ TEST_CASE("Undistorted output changes only on new EEPROM") {
 
     bool foundDifferentFramePair = false;
     for(int i = 0; i < 5; i++) {
-        bool hasTimedOut = false;
-        auto frames = queue->get<dai::MessageGroup>(std::chrono::seconds(10), hasTimedOut);
-        REQUIRE(!hasTimedOut);
+        auto frames = queue->get<dai::MessageGroup>();
         REQUIRE(frames != nullptr);
 
         auto distortedFrame = frames->get<dai::ImgFrame>("distorted");
